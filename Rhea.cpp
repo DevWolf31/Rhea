@@ -13,7 +13,7 @@
 //--------------------------------------------------//
 // Definitions
 //--------------------------------------------------//
-#define __RHEA_VERSION__ "0.1.0-alpha.8"
+#define __RHEA_VERSION__ "0.1.0-alpha.9"
 #define __RHEA_DEBUG__ 0
 
 //--------------------------------------------------//
@@ -68,7 +68,7 @@ namespace Rhea {
 
         while((end = string.find(delimiter, start)) != std::string::npos) {
             token = string.substr(start, end - start);
-            start = end + delimiter.size();
+            start = end + size;
             tokens.push_back(token);
         }
 
@@ -109,41 +109,47 @@ namespace Rhea {
             /**
              * @brief Loads the contents of a binary file into the ROM.
              * @param path The path to the file.
+             * @return If the operation was successful.
              */
-            void load(const std::string path) {
+            bool load(const std::string path) {
                 std::ifstream file = std::ifstream(path, std::ios::binary);
 
                 if(!file.is_open()) {
-                    std::cerr << "\tError, file at \"" << path << "\" not found." << std::endl;
-                    return;
+                    std::cerr << "\tFile at \"" << path << "\" not found." << std::endl;
+                    return false;
                 }
 
                 if(!file.read(reinterpret_cast<char *> (&this->data[0x8000]), 0x8000)) {
-                    std::cerr << "\tError, file at \"" << path << "\" can't be loaded." << std::endl;
-                    return;
+                    std::cerr << "\tFile at \"" << path << "\" can't be loaded." << std::endl;
+                    return false;
                 }
 
                 file.close();
+
+                return true;
             }
 
             /**
              * @brief Saves the contents of the ROM into a binary file.
              * @param path The path to the file.
+             * @return If the operation was successful.
              */
-            void save(const std::string path) const {
+            bool save(const std::string path) const {
                 std::ofstream file = std::ofstream(path, std::ios::binary);
 
                 if(!file.is_open()) {
-                    std::cerr << "\tError, file at \"" << path << "\" not found." << std::endl;
-                    return;
+                    std::cerr << "\tFile at \"" << path << "\" not found." << std::endl;
+                    return false;
                 }
 
                 if(!file.write(reinterpret_cast<char *> (&this->data[0x8000]), 0x8000)) {
-                    std::cerr << "\tError, file at \"" << path << "\" can't be saved." << std::endl;
-                    return;
+                    std::cerr << "\tFile at \"" << path << "\" can't be saved." << std::endl;
+                    return false;
                 }
 
                 file.close();
+
+                return true;
             }
 
         private:
@@ -175,29 +181,32 @@ namespace Rhea {
             /**
              * @brief Loads the contents of a binary file into the ROM.
              * @param path The path to the file.
+             * @return If the operation was successful.
              */
-            void load(const std::string path) {
-                this->memory.load(path);
+            bool load(const std::string path) {
+                return this->memory.load(path);
             }
 
             /**
              * @brief Saves the contents of the ROM into a binary file.
              * @param path The path to the file.
+             * @return If the operation was successful.
              */
-            void save(const std::string path) const {
-                this->memory.save(path);
+            bool save(const std::string path) const {
+                return this->memory.save(path);
             }
 
             /**
              * @brief Dumps the state of the machine into a text file. This is useful when some kind of error occurs.
              * @param path The path to the file.
+             * @return If the operation was successful.
              */
-            void dump(const std::string path) const {
+            bool dump(const std::string path) const {
                 std::ofstream file = std::ofstream(path);
 
                 if(!file.is_open()) {
-                    std::cerr << "\tError, file at \"" << path << "\" not found." << std::endl;
-                    return;
+                    std::cerr << "\tFile at \"" << path << "\" not found." << std::endl;
+                    return false;
                 }
 
                 file << "Registers" << std::endl;
@@ -251,6 +260,8 @@ namespace Rhea {
                         break;             // stop.
                     }
                 }
+
+                return true;
             }
 
             Memory & reference_memory() noexcept {
@@ -362,9 +373,10 @@ int main(int argc, const char * argv[]) {
                 command_arg_1 = command_varargs.at(1);
             }
 
-            machine.load(command_arg_1);
+            if(machine.load(command_arg_1)) {
+                std::cout << "\tLoaded the \"" << command_arg_1 << "\" file correctly." << std::endl;
+            }
 
-            std::cout << "\tLoaded the \"" << command_arg_1 << "\" file correctly." << std::endl;
             continue;
         }
 
@@ -379,9 +391,10 @@ int main(int argc, const char * argv[]) {
                 command_arg_1 = command_varargs.at(1);
             }
 
-            machine.save(command_arg_1);
+            if(machine.save(command_arg_1)) {
+                std::cout << "\tSaved the \"" << command_arg_1 << "\" file correctly." << std::endl;
+            }
 
-            std::cout << "\tSaved the \"" << command_arg_1 << "\" file correctly." << std::endl;
             continue;
         }
 
@@ -396,9 +409,10 @@ int main(int argc, const char * argv[]) {
                 command_arg_1 = command_varargs.at(1);
             }
 
-            machine.dump(command_arg_1);
+            if(machine.dump(command_arg_1)) {
+                std::cout << "\tDumped the machine into the \"" << command_arg_1 << "\" file correctly." << std::endl;
+            }
 
-            std::cout << "\tDumped the machine into the \"" << command_arg_1 << "\" file correctly." << std::endl;
             continue;
         }
 
@@ -415,7 +429,13 @@ int main(int argc, const char * argv[]) {
 
             is_option_1 = Rhea::is_prefixed(command_arg_1, "+");
             is_option_2 = Rhea::is_prefixed(command_arg_1, "-");
-            word_1 = std::labs(std::stol(command_arg_1, 0, 16));
+
+            try {
+                word_1 = std::labs(std::stol(command_arg_1, 0, 16));
+            } catch(...) {
+                std::cerr << "\tCan't parse argument #1 value \"" << command_arg_1 << "\"." << std::endl;
+                continue;
+            }
 
             if(is_option_1 || is_option_2) {
                 std::cout << "\tJumped to the \"" << Rhea::format_hex(machine.reference_i_pointer()) << "\"" << (is_option_2 ? " - " : " + ") << "\"" << Rhea::format_hex(word_1) << "\" address successfully." << std::endl;
@@ -455,7 +475,14 @@ int main(int argc, const char * argv[]) {
             is_option_5 = command_arg_1 == "ip";
             is_option_6 = command_arg_1 == "sp";
             is_option_none = !(is_option_1 || is_option_2 || is_option_3 || is_option_4 || is_option_5 || is_option_6);
-            word_1 = is_option_none ? std::labs(std::stol(command_arg_1, 0, 16)) : 0x0000;
+
+            try {
+                word_1 = is_option_none ? std::labs(std::stol(command_arg_1, 0, 16)) : 0x0000;
+            } catch(...) {
+                std::cerr << "\tCan't parse argument #1 value \"" << command_arg_1 << "\"." << std::endl;
+                continue;
+            }
+
             word_2 = is_option_none ? machine.reference_memory().get(word_1) : 0x0000;
 
             if(!is_option_none) {
@@ -517,8 +544,20 @@ int main(int argc, const char * argv[]) {
             is_option_5 = command_arg_1 == "ip";
             is_option_6 = command_arg_1 == "sp";
             is_option_none = !(is_option_1 || is_option_2 || is_option_3 || is_option_4 || is_option_5 || is_option_6);
-            word_1 = is_option_none ? std::labs(std::stol(command_arg_1, 0, 16)) : 0x0000;
-            word_2 = std::labs(std::stol(command_arg_2, 0, 16));
+
+            try {
+                word_1 = is_option_none ? std::labs(std::stol(command_arg_1, 0, 16)) : 0x0000;
+            } catch(...) {
+                std::cerr << "\tCan't parse argument #1 value \"" << command_arg_1 << "\"." << std::endl;
+                continue;
+            }
+            
+            try {
+                word_2 = std::labs(std::stol(command_arg_2, 0, 16));
+            } catch(...) {
+                std::cerr << "\tCan't parse argument #2 value \"" << command_arg_2 << "\"." << std::endl;
+                continue;
+            }
 
             if(!is_option_none) {
                 if(!is_option_5) {
@@ -557,6 +596,83 @@ int main(int argc, const char * argv[]) {
             machine.reference_memory().set(word_1, word_2);
 
             std::cout << "\tThe value on the \"" << Rhea::format_hex(word_1) << "\" address is now \"" << Rhea::format_hex(word_2, 2) << "\"." << std::endl;
+            continue;
+        }
+
+        if(Rhea::is_prefixed(command, "-help")) {
+            command_varargs = Rhea::split(command, " ");
+
+            if(command_varargs.size() < 2) {
+                std::cerr << "\tCommand name required as argument #1." << std::endl;
+                continue;
+            } else {
+                command_arg_1 = command_varargs.at(1);
+            }
+        
+            is_option_1 = command_arg_1 == "dump";
+            is_option_2 = command_arg_1 == "get";
+            is_option_3 = command_arg_1 == "jump";
+            is_option_4 = command_arg_1 == "load";
+            is_option_5 = command_arg_1 == "save";
+            is_option_6 = command_arg_1 == "set";
+            
+            if(is_option_1) {
+                std::cout << "\tdump <file : string>"<< std::endl;
+                std::cout << std::endl;
+                std::cout << "\tDumps the state of the machine into a text \"file\". This is just the" << std::endl;
+                std::cout << "\tcurrent values of the AR, XR, YR and SR; anlog with the values that IP" << std::endl;
+                std::cout << "\tand SP currently point to. Also a view to the next 255 bytes after the" << std::endl;
+                std::cout << "\tvalue IP is currently pointing to is provided (including IP)." << std::endl;
+                continue;
+            }
+
+            if(is_option_2) {
+                std::cout << "\tget <address : number>"<< std::endl;
+                std::cout << "\tget <internal : string (ar | xr | yr | sr | ip | sp)>"<< std::endl;
+                std::cout << std::endl;
+                std::cout << "\tGets the value at the specified \"address\" on the memory or at the" << std::endl;
+                std::cout << "\tspecified \"internal\" register/pointer. The value can be a byte or a" << std::endl;
+                std::cout << "\tword depending of the register/pointer, but with the addresses it will" << std::endl;
+                std::cout << "\talways be a byte." << std::endl;
+                continue;
+            }
+
+            if(is_option_3) {
+                std::cout << "\tjump [sign: string (+ | -)]<address: number>"<< std::endl;
+                std::cout << std::endl;
+                std::cout << "\tJumps (sets IP) to an specific \"address\" in the memory. If the \"sign\"" << std::endl;
+                std::cout << "\tis + the machine jumps to [IP + \"address\"]; else, if it's - the machine" << std::endl;
+                std::cout << "\tjumps to [IP - \"address\"]. If there is no \"sign\" the machine just" << std::endl;
+                std::cout << "\tjumps to the \"address\"." << std::endl;
+                continue;
+            }
+
+            if(is_option_4) {
+                std::cout << "\tload <file : string>"<< std::endl;
+                std::cout << std::endl;
+                std::cout << "\tLoads the ROM from a binary \"file\" of 32 KB." << std::endl;
+                continue;
+            }
+
+            if(is_option_4) {
+                std::cout << "\tload <file : string>"<< std::endl;
+                std::cout << std::endl;
+                std::cout << "\tSaves the ROM into a binary \"file\" of 32 KB." << std::endl;
+                continue;
+            }
+
+            if(is_option_6) {
+                std::cout << "\tset <address : number> <value: number>"<< std::endl;
+                std::cout << "\tset <internal : string (ar | xr | yr | sr | ip | sp)> <value: number>"<< std::endl;
+                std::cout << std::endl;
+                std::cout << "\tSets the \"value\" at the specified \"address\" on the memory or at the" << std::endl;
+                std::cout << "\tspecified \"internal\" register/pointer. The \"value\" can be a byte or a" << std::endl;
+                std::cout << "\tword depending of the register/pointer, but with the addresses it will" << std::endl;
+                std::cout << "\talways be a byte." << std::endl;
+                continue;
+            }
+
+            std::cerr << "\tUnrecognized help topic \"" << command_arg_1 << "\"." << std::endl;
             continue;
         }
 
