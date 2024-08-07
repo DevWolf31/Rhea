@@ -16,7 +16,7 @@ La supresión por sonido es un nuevo tipo de supresión por **Falta de Memoria (
 > [!TIP]
 > Video de demostración: https://youtu.be/77M8Adnxmsw?si=f-hon2OtKevtEUhx
 >
-> Canal de Youtube:https://youtube.com/@igna778
+> Canal de Youtube:https://youtube.com/@igna778 <br>
 > Servidor de Discord: https://discord.gg/rsuTZer7RT
 
 ## Aplicaciones
@@ -60,20 +60,16 @@ Agarra un cofre y mira al comparador, de esa manera te aseguras de que este siem
 
 ### Destruirlo
 
-```ad-danger
-title: Cuidado
-Si el siguiente paso es relizado de manera incorrecta podrías crear un bucle de crasheos. ¡SÉ CUIDADOSO!
-```
+> [!CAUTION]
+> Si el siguiente paso es relizado de manera incorrecta podrías crear un bucle de crasheos. ¡SÉ CUIDADOSO!
 
 Si no planeas usarlo más rompe el cofre antes que cualquier otro componente.
 
 ## Canales
 El supresor por sonido tiene 15 canales, pero solo encuentro útiles los siguientes. Si encuentras algún otro uso y piensas que este documento debería ser actualizado contacta a Igna778 a través de Discord.
 
-```ad-warning
-title: Atención
-Recuerda que las acciones no relacionadas con el jugador (tales como creepers explotando o el uso de cohetes) podrían crashear el servidor.
-```
+> [!WARNING]
+> Recuerda que las acciones no relacionadas con el jugador (tales como creepers explotando o el uso de cohetes) podrían crashear el servidor.
 
 ##### 1 Movimiento
 - **Exploit de Kickeo**
@@ -102,16 +98,12 @@ Recuerda que las acciones no relacionadas con el jugador (tales como creepers ex
 - **Duplicación**
     - Duplica cualquier bloque que coloques.,
 
-```ad-note
-title: Nota
-Por lo que he visto, los otros canales pueden llegar a ser útiles bajo circunstancias muy específicas, pero mayormente solo terminan kickeando jugadores o crasheando el servidor. Debido a esto no son indicados en este documento.
-```
+> [!NOTE]
+> Por lo que he visto, los otros canales pueden llegar a ser útiles bajo circunstancias muy específicas, pero mayormente solo terminan kickeando jugadores o crasheando el servidor. Debido a esto no son indicados en este documento.
 
 ## Código
-```ad-info
-title: Nota
-Todos los nombres de clases, métodos, campos y cualquier otra cosa son tomados de los mapeos Yarn del juego.
-```
+> [!NOTE]
+> Todos los nombres de clases, métodos, campos y cualquier otra cosa son tomados de los mapeos Yarn del juego.
 
 Este exploit es posible gracias al intento de obtener una propiedad que no existe en `blockstate` por parte del código.
 Las clases relevantes a este exploit son: `CalibratedSculkSensorBlockEntity`, `State` y `Vibrations`.
