@@ -1,5 +1,5 @@
 # Supresión por Sonido
-La supresión por sonido es un nuevo tipo de supresión por **Falta de Memoria (Out of Memory)** que usa una técnica intercambio de entidades-bloque para crear una entidad-bloque en un estado ilegal que luego puede ser usada para suprimir.
+La supresión por sonido es un nuevo tipo de supresión (tal cómo la de **Falta de Memoria (Out of Memory)**, la de **Conversión de Clase (Class Cast)** o la de **Sobrecarga de la Pila (Stack Overflow)**) que usa una técnica intercambio de entidades-bloque para crear una entidad-bloque en un estado ilegal que luego puede ser usada para suprimir.
 
 #### Créditos
 - Descubrimiento:
