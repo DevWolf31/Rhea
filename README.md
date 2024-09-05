@@ -1,11 +1,11 @@
-|Instruction|Mnemonic          |Bytes|
-|-----------|------------------|-----|
-|F0         |``JC    ±offset`` |3    |
-|F1         |``JC.L  $address``|2    |
-|F2         |``JC.N  $address``|3    |
-|F3         |``JC.H  $address``|4    |
-|D0         |JC    memory    |4    |
-|D1         |JC    (memory)  |4    |
+|Instruction|Mnemonic             |Bytes|
+|-----------|---------------------|-----|
+|F0         |``JC    ±offset``    |3    |
+|F1         |``JC.L  $address``   |2    |
+|F2         |``JC.N  $address``   |3    |
+|F3         |``JC.H  $address``   |4    |
+|D0         |``JC    memory``     |4    |
+|D1         |``JC    (memory)``   |4    |
 |F5         |JN    ±offset   |3    |
 |F6         |JN.L  $address  |2    |
 |F7         |JN.N  $address  |3    |
