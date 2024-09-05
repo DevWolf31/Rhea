@@ -1,6 +1,6 @@
-|Instruction|Mnemonic        |Bytes|
+|Instruction|Mnemonic|Bytes|
 |-----------|----------------|-----|
-|F0         |JC    ±offset   |3    |
+|F0         |``JC ±offset``|3|
 |F1         |JC.L  $address  |2    |
 |F2         |JC.N  $address  |3    |
 |F3         |JC.H  $address  |4    |
